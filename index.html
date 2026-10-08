@@ -1186,7 +1186,7 @@ function countScatter(board) {
   return board.filter((symbolId) => symbolId === "supra").length;
 }
 
-function playSpin({ seed = secureSeed(), forcedFreeSpin = false } = {}) {
+function generateSpin({ seed = secureSeed(), forcedFreeSpin = false } = {}) {
   const rng = new SeededRng(seed);
   let board = createBoard(rng);
   let totalMultiplier = 0;
