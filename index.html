@@ -292,22 +292,26 @@ a:focus-visible {
 .grid-frame {
   position: relative;
   z-index: 2;
-  width: min(82vw, 960px, calc(133.333dvh - 461px));
+  width: min(82vw, 900px, calc(133.333dvh - 438px));
   margin-top: 0;
-  padding: 7px;
-  border: 6px solid #b48660;
-  border-radius: 6px;
-  background: #36261f;
-  box-shadow: var(--shadow), inset 0 0 0 3px #1d1511;
+  padding: 10px;
+  border: 1px solid rgba(255, 240, 224, 0.42);
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(37, 28, 37, 0.82), rgba(19, 22, 27, 0.78));
+  box-shadow: 0 26px 70px rgba(12, 10, 15, 0.48), inset 0 1px rgba(255, 251, 246, 0.32);
+  backdrop-filter: blur(4px);
 }
 
 .slot-grid {
   display: grid;
   width: 100%;
   grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
-  gap: 2px;
+  gap: 6px;
+  padding: 6px;
   overflow: hidden;
-  background: #241912;
+  border: 1px solid rgba(255, 241, 226, 0.16);
+  border-radius: 16px;
+  background: rgba(8, 12, 15, 0.72);
 }
 
 .slot-cell {
@@ -315,16 +319,21 @@ a:focus-visible {
   aspect-ratio: 8 / 5;
   min-width: 0;
   overflow: hidden;
-  background: #151719;
-  transition: filter 180ms ease, transform 180ms ease;
+  border: 1px solid rgba(255, 238, 222, 0.13);
+  border-radius: 11px;
+  background: radial-gradient(circle at 46% 25%, #76536a 0, #402e3d 52%, #1b2024 100%);
+  box-shadow: inset 0 1px rgba(255, 253, 247, 0.16), inset 0 -12px 28px rgba(5, 8, 11, 0.28);
+  transition: filter 180ms ease, transform 180ms ease, opacity 180ms ease;
 }
 
 .slot-cell img {
   display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  transform: none;
+  width: 112%;
+  height: 112%;
+  margin: -6%;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.01);
   transition: transform 260ms ease, filter 200ms ease;
   user-select: none;
 }
@@ -335,24 +344,44 @@ a:focus-visible {
 
 .slot-cell.is-winner {
   z-index: 1;
-  box-shadow: inset 0 0 0 4px #f5d48d, inset 0 0 22px rgba(250, 226, 163, 0.8);
+  border-color: rgba(255, 232, 163, 0.96);
+  box-shadow: 0 0 0 2px rgba(255, 230, 161, 0.48), inset 0 0 28px rgba(250, 226, 163, 0.52);
   filter: brightness(1.22) saturate(1.16);
   animation: winning-cell 650ms ease-in-out infinite alternate;
 }
 
-.slot-cell.is-multiplier::after {
+.prize-badge {
   position: absolute;
-  top: 7px;
-  right: 7px;
-  content: "×";
+  top: 8px;
+  right: 8px;
   display: grid;
-  width: 26px;
-  height: 26px;
+  min-width: 32px;
+  min-height: 26px;
+  padding: 3px 7px;
   place-items: center;
-  border-radius: 50%;
-  background: #eacb83;
-  color: #3e2031;
+  border: 1px solid rgba(255, 246, 210, 0.72);
+  border-radius: 999px;
+  background: linear-gradient(145deg, #f6db96, #bd8150);
+  box-shadow: 0 4px 12px rgba(16, 9, 9, 0.35);
+  color: #3d1e2c;
+  font-size: 12px;
   font-weight: 900;
+}
+
+.slot-cell.is-collector {
+  z-index: 4;
+  overflow: visible;
+  border-color: rgba(255, 227, 165, 0.96);
+  box-shadow: 0 0 0 2px rgba(253, 225, 151, 0.42), 0 0 30px rgba(255, 209, 126, 0.42);
+}
+
+.slot-cell.is-collector img {
+  animation: host-rise 760ms cubic-bezier(0.18, 0.76, 0.22, 1) infinite alternate;
+}
+
+.slot-cell.is-collected {
+  z-index: 3;
+  animation: collect-to-host 820ms cubic-bezier(0.15, 0.75, 0.22, 1) forwards;
 }
 
 .slot-cell.is-spinning img {
@@ -370,13 +399,28 @@ a:focus-visible {
 }
 
 @keyframes cell-spin {
-  from { transform: translateY(-3px) scale(1.025); }
-  to { transform: translateY(3px) scale(1.025); }
+  from { transform: translateY(-3px) scale(1.04); }
+  to { transform: translateY(3px) scale(1.04); }
+}
+
+@keyframes host-rise {
+  from { transform: translateY(2px) scale(1.02); filter: brightness(1.04); }
+  to { transform: translateY(-11px) scale(1.12); filter: brightness(1.22) saturate(1.16); }
+}
+
+@keyframes collect-to-host {
+  0% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: brightness(1.08); }
+  62% { opacity: 1; }
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(var(--collect-x) * 100%), calc(var(--collect-y) * 100%), 0) scale(0.28);
+    filter: brightness(1.5) saturate(1.4);
+  }
 }
 
 @keyframes win-frame {
-  0%, 100% { box-shadow: var(--shadow), inset 0 0 0 3px #1d1511; }
-  50% { box-shadow: 0 0 0 3px rgba(255, 237, 174, 0.92), 0 0 38px rgba(255, 217, 124, 0.72), var(--shadow), inset 0 0 0 3px #1d1511; }
+  0%, 100% { box-shadow: 0 26px 70px rgba(12, 10, 15, 0.48), inset 0 1px rgba(255, 251, 246, 0.32); }
+  50% { box-shadow: 0 0 0 3px rgba(255, 237, 174, 0.92), 0 0 46px rgba(255, 217, 124, 0.72), 0 26px 70px rgba(12, 10, 15, 0.48); }
 }
 
 .win-celebration {
@@ -799,8 +843,28 @@ a:focus-visible {
 
   .grid-frame {
     width: 100%;
+    padding: 7px;
+    border-width: 1px;
+    border-radius: 17px;
+  }
+
+  .slot-grid {
+    gap: 4px;
     padding: 4px;
-    border-width: 5px;
+    border-radius: 11px;
+  }
+
+  .slot-cell {
+    border-radius: 7px;
+  }
+
+  .prize-badge {
+    top: 4px;
+    right: 4px;
+    min-width: 25px;
+    min-height: 20px;
+    padding: 2px 5px;
+    font-size: 10px;
   }
 
   .stage-vines {
@@ -894,7 +958,7 @@ a:focus-visible {
 
             <div class="game-meta">
               <span class="meta-pill">FREE PLAY</span>
-              <span>5 × 6 · CASCADING SCATTER PAYS</span>
+              <span>5 × 6 · CASCADING COLLECTOR PAYS</span>
               <button id="modal-open" class="rules-link">RULES &amp; PAYTABLE</button>
             </div>
 
@@ -905,7 +969,7 @@ a:focus-visible {
             <div class="result-panel" aria-live="polite">
               <div id="free-spins" class="free-spins" hidden>10 FREE SPINS</div>
               <div class="status-line" id="game-status">DEMO MODE</div>
-              <div class="substatus" id="game-substatus">Original free-play math · no real-money wagering</div>
+              <div class="substatus" id="game-substatus">Seeded 5 × 6 free-play math · no real-money wagering</div>
               <div class="fair-record">SPIN RECORD <code id="fair-hash">Ready for a free-play spin</code></div>
             </div>
           </section>
@@ -937,11 +1001,11 @@ a:focus-visible {
     <dialog id="info-modal" class="info-modal">
       <button id="close-modal" class="modal-close" aria-label="Close rules">×</button>
       <p class="eyebrow">SUPRA · FREE PLAY</p>
-      <h1>Original demo rules</h1>
+      <h1>Free-play rules</h1>
       <p>
         Match 8 or more identical food symbols anywhere on the 5 × 6 board. Winning symbols
-        cascade away for another chance to win. The Supra seal can award free spins, and a Toast
-        Multiplier can activate when the host appears on a winning board.
+        cascade away for another chance to win. When Ch'ipiani Kaci lands beside one or more
+        Toast Multipliers, he collects them for an immediate win before the cascade.
       </p>
       <div class="rule-grid">
         <div><span>Target RTP</span><strong id="rtp-value">96.70%</strong></div>
@@ -950,8 +1014,8 @@ a:focus-visible {
         <div><span>Currency</span><strong>Demo EUR</strong></div>
       </div>
       <p class="fine-print">
-        This is a free-play concept. It uses original client-side demo maths based on public slot
-        conventions; it is not a certified or real-money gambling product.
+        This is a free-play concept. It uses transparent client-side demo maths; it is not a
+        certified or real-money gambling product.
       </p>
     </dialog>
 
@@ -960,9 +1024,11 @@ a:focus-visible {
 /**
  * Free-play demo math.
  *
- * This is an original 5x6 scatter-pay / cascade model inspired by public
- * slot conventions. It is deliberately not an implementation of any
- * proprietary provider's maths, RNG, or certification model.
+ * This is the game's seeded 5x6 scatter-pay / cascade model.  The Host is
+ * a collector: when a Toast Multiplier lands beside him, that combination
+ * becomes a winning event even without an eight-symbol food cluster.
+ * It remains a transparent free-play model, not a certified real-money
+ * maths package.
  */
 
 const ROWS = 6;
@@ -972,7 +1038,9 @@ const TARGET_RTP = 0.967;
 const MAX_WIN_MULTIPLIER = 20000;
 
 // Calibrated against the reproducible simulation in scripts/verify-math.mjs.
-const PAYOUT_SCALE = 2.61936;
+// Collector prizes are included in the same return model as food clusters.
+const PAYOUT_SCALE = 1.575457;
+const COLLECTOR_VALUES = [2, 3, 5, 8];
 
 const SYMBOLS = Object.freeze([
   {
@@ -1073,7 +1141,7 @@ const SYMBOLS = Object.freeze([
       [12, 8],
       [15, 15],
     ],
-    special: "wild",
+    special: "collector",
   },
   {
     id: "multiplier",
@@ -1161,11 +1229,57 @@ function positionsFor(board, symbolId) {
   return positions;
 }
 
+function surroundingPositions(position) {
+  const row = Math.floor(position / COLS);
+  const column = position % COLS;
+  const positions = [];
+
+  for (let rowOffset = -1; rowOffset <= 1; rowOffset += 1) {
+    for (let columnOffset = -1; columnOffset <= 1; columnOffset += 1) {
+      if (!rowOffset && !columnOffset) continue;
+      const nextRow = row + rowOffset;
+      const nextColumn = column + columnOffset;
+      if (nextRow < 0 || nextRow >= ROWS || nextColumn < 0 || nextColumn >= COLS) continue;
+      positions.push(nextRow * COLS + nextColumn);
+    }
+  }
+
+  return positions;
+}
+
+function collectorEventsFor(board, rng) {
+  const claimedTargets = new Set();
+  const values = {};
+  const events = [];
+
+  for (const position of positionsFor(board, "man")) {
+    const targets = surroundingPositions(position).filter(
+      (target) => board[target] === "multiplier" && !claimedTargets.has(target),
+    );
+
+    if (!targets.length) continue;
+
+    const targetValues = targets.map(() => COLLECTOR_VALUES[rng.int(COLLECTOR_VALUES.length)]);
+    targets.forEach((target, index) => {
+      claimedTargets.add(target);
+      values[target] = targetValues[index];
+    });
+
+    events.push({
+      position,
+      targets,
+      values: targetValues,
+      totalMultiplier: targetValues.reduce((total, value) => total + value, 0),
+    });
+  }
+
+  return { events, values };
+}
+
 function calculateRound(board, cascadeMultiplier, rng) {
   const wins = [];
   const winningPositions = new Set();
-  const multiplierPositions = positionsFor(board, "multiplier");
-  const wildPositions = positionsFor(board, "man");
+  const collector = collectorEventsFor(board, rng);
 
   for (const symbol of PAYING_SYMBOLS) {
     const directPositions = positionsFor(board, symbol.id);
@@ -1183,39 +1297,41 @@ function calculateRound(board, cascadeMultiplier, rng) {
     });
   }
 
-  if (!wins.length) {
+  if (!wins.length && !collector.events.length) {
     return {
       wins,
       winningPositions: [],
       multiplierPositions: [],
+      multiplierValues: {},
+      collectors: [],
       multiplier: cascadeMultiplier,
       roundMultiplier: 0,
     };
   }
 
-  // A Toast Multiplier only activates when a paying board contains the host.
-  let toastMultiplier = 1;
-  if (wildPositions.length && multiplierPositions.length) {
-    toastMultiplier = multiplierPositions.reduce(
-      (total) => total * [2, 2, 3, 5][rng.int(4)],
-      1,
-    );
-    toastMultiplier = Math.min(toastMultiplier, 50);
-    multiplierPositions.forEach((position) => winningPositions.add(position));
-    wildPositions.forEach((position) => winningPositions.add(position));
-  }
+  collector.events.forEach((event) => {
+    winningPositions.add(event.position);
+    event.targets.forEach((target) => winningPositions.add(target));
+  });
 
-  const baseMultiplier = wins.reduce((total, win) => total + win.baseMultiplier, 0);
+  const foodMultiplier = wins.reduce((total, win) => total + win.baseMultiplier, 0);
+  const collectorMultiplier = collector.events.reduce(
+    (total, event) => total + event.totalMultiplier,
+    0,
+  );
+  const baseMultiplier = foodMultiplier + collectorMultiplier;
   const roundMultiplier = Math.min(
-    baseMultiplier * cascadeMultiplier * toastMultiplier * PAYOUT_SCALE,
+    baseMultiplier * cascadeMultiplier * PAYOUT_SCALE,
     MAX_WIN_MULTIPLIER,
   );
 
   return {
     wins,
     winningPositions: [...winningPositions],
-    multiplierPositions: toastMultiplier > 1 ? multiplierPositions : [],
-    multiplier: cascadeMultiplier * toastMultiplier,
+    multiplierPositions: Object.keys(collector.values).map(Number),
+    multiplierValues: collector.values,
+    collectors: collector.events,
+    multiplier: cascadeMultiplier,
     roundMultiplier,
   };
 }
@@ -1251,6 +1367,8 @@ function generateSpin({ seed = secureSeed(), forcedFreeSpin = false } = {}) {
           wins: [],
           winningPositions: [],
           multiplierPositions: [],
+          multiplierValues: {},
+          collectors: [],
           multiplier: 1,
           roundMultiplier: 0,
           cascade: 0,
@@ -1266,6 +1384,8 @@ function generateSpin({ seed = secureSeed(), forcedFreeSpin = false } = {}) {
       wins: evaluation.wins,
       winningPositions: evaluation.winningPositions,
       multiplierPositions: evaluation.multiplierPositions,
+      multiplierValues: evaluation.multiplierValues,
+      collectors: evaluation.collectors,
       multiplier: evaluation.multiplier,
       roundMultiplier: evaluation.roundMultiplier,
       cascade,
@@ -1387,6 +1507,12 @@ function makeCell(index) {
   const winMarker = document.createElement("span");
   winMarker.className = "win-marker";
   cell.append(winMarker);
+
+  const prizeBadge = document.createElement("span");
+  prizeBadge.className = "prize-badge";
+  prizeBadge.hidden = true;
+  cell.append(prizeBadge);
+
   cellElements.push(cell);
   ui.grid.append(cell);
 }
@@ -1397,22 +1523,60 @@ function buildGrid() {
 
 function renderBoard(
   board,
-  { winners = [], multiplierPositions = [], spinning = false, spinningColumns = [] } = {},
+  {
+    winners = [],
+    multiplierPositions = [],
+    multiplierValues = {},
+    collectorEvents = [],
+    spinning = false,
+    spinningColumns = [],
+  } = {},
 ) {
   const winnerSet = new Set(winners);
   const multiplierSet = new Set(multiplierPositions);
   const spinningColumnSet = new Set(spinningColumns);
+  const collectorSet = new Set(collectorEvents.map((event) => event.position));
+  const collectedByPosition = new Map();
+
+  collectorEvents.forEach((event) => {
+    event.targets.forEach((target, index) => {
+      collectedByPosition.set(target, {
+        host: event.position,
+        value: event.values[index],
+      });
+    });
+  });
 
   board.forEach((symbolId, index) => {
     const cell = cellElements[index];
     const image = cell.querySelector("img");
+    const prizeBadge = cell.querySelector(".prize-badge");
     const meta = symbolMeta(symbolId);
+    const collection = collectedByPosition.get(index);
     image.src = asset(symbolId);
     image.alt = meta?.name ?? symbolId;
     cell.setAttribute("aria-label", meta?.name ?? symbolId);
     cell.classList.toggle("is-winner", winnerSet.has(index));
     cell.classList.toggle("is-multiplier", multiplierSet.has(index));
+    cell.classList.toggle("is-collector", collectorSet.has(index));
+    cell.classList.toggle("is-collected", Boolean(collection));
     cell.classList.toggle("is-spinning", spinning || spinningColumnSet.has(index % COLS));
+
+    if (collection) {
+      const hostRow = Math.floor(collection.host / COLS);
+      const hostColumn = collection.host % COLS;
+      const row = Math.floor(index / COLS);
+      const column = index % COLS;
+      cell.style.setProperty("--collect-x", String(hostColumn - column));
+      cell.style.setProperty("--collect-y", String(hostRow - row));
+      prizeBadge.hidden = false;
+      prizeBadge.textContent = `×${collection.value ?? multiplierValues[index]}`;
+    } else {
+      cell.style.removeProperty("--collect-x");
+      cell.style.removeProperty("--collect-y");
+      prizeBadge.hidden = true;
+      prizeBadge.textContent = "";
+    }
   });
 }
 
@@ -1463,11 +1627,16 @@ function setSpinState(spinning) {
 }
 
 function roundDetail(round) {
-  if (!round.wins.length) return "No food cluster this time";
-  const labels = round.wins
+  const foodLabels = round.wins
     .map((win) => `${symbolMeta(win.symbolId)?.name ?? win.symbolId} ×${win.count}`)
     .join(" · ");
-  return `${labels} — ${formatMultiplier(round.roundMultiplier)}`;
+  const collectorLabels = (round.collectors ?? [])
+    .map(
+      (event) =>
+        `Host collects ${event.targets.length} toast${event.targets.length === 1 ? "" : "s"} · ${formatMultiplier(event.totalMultiplier)}`,
+    )
+    .join(" · ");
+  return [foodLabels, collectorLabels].filter(Boolean).join(" · ");
 }
 
 async function animateReels(targetBoard) {
@@ -1515,7 +1684,7 @@ async function playSpin() {
     announce("FREE SPIN", "No demo balance was deducted.");
   } else {
     state.balance = Number((state.balance - state.bet).toFixed(2));
-    announce("SPINNING", "5 × 6 scatter-pays · cascades enabled");
+    announce("SPINNING", "5 × 6 scatter-pays · Host collector enabled");
   }
   renderHud();
 
@@ -1530,18 +1699,21 @@ async function playSpin() {
     renderBoard(round.board, {
       winners: round.winningPositions,
       multiplierPositions: round.multiplierPositions,
+      multiplierValues: round.multiplierValues,
+      collectorEvents: round.collectors,
     });
 
-    if (round.wins.length) {
+    const hasRoundWin = round.wins.length || round.collectors?.length;
+    if (hasRoundWin) {
       announce(
-        `CASCADE ${round.cascade + 1}`,
+        round.collectors?.length ? "HOST COLLECTS" : `CASCADE ${round.cascade + 1}`,
         `${roundDetail(round)} · running ${formatMultiplier(
           outcome.rounds
             .slice(0, round.cascade + 1)
             .reduce((total, item) => total + item.roundMultiplier, 0),
         )}`,
       );
-      await delay(state.turbo ? 190 : 760);
+      await delay(round.collectors?.length ? (state.turbo ? 420 : 980) : state.turbo ? 190 : 760);
     }
   }
 
@@ -1563,7 +1735,7 @@ async function playSpin() {
       `${formatMultiplier(outcome.totalMultiplier)} total · randomized free-play spin #${outcome.hash.slice(0, 8)}`,
     );
   } else {
-    announce("NO WIN", "Spin again — food symbols pay from 8 matching icons.");
+    announce("NO WIN", "Food symbols pay from 8 icons; the Host collects nearby toast prizes.");
   }
   renderHud();
   setSpinState(false);
@@ -1639,7 +1811,7 @@ function bootstrap() {
   renderBoard(state.board);
   renderHud();
   setupEvents();
-  announce("DEMO MODE", "Original free-play math · no real-money wagering");
+  announce("DEMO MODE", "Seeded 5 × 6 free-play math · no real-money wagering");
 }
 
 bootstrap();
